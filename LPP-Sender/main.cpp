@@ -59,13 +59,13 @@ void setup(void) {
 static void ledOnTask(void *) {
   ledTimer.onFired(ledOffTask, NULL);
   ledTimer.startOneShot(10);
-  ledOn(0);
+  System.ledOn(0);
 }
 
 static void ledOffTask(void *) {
   ledTimer.onFired(ledOnTask, NULL);
   ledTimer.startOneShot(990);
-  ledOff(0);
+  System.ledOff(0);
 }
 
 static void sendDone(IEEE802_15_4Mac &radio,
