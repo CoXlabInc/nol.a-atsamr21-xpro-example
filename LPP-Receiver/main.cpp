@@ -77,8 +77,8 @@ static void received(IEEE802_15_4Mac &radio, const IEEE802_15_4Frame *frame) {
            frame->srcAddr.id.s64[7]);
   }
   printf("RSSI(%d dBm), LQI(%d) (length:%u)",
-         frame->rssi,
-         frame->lqi,
+         frame->power,
+         frame->meta.DSSS.corr,
          frame->getPayloadLength());
 
   for (i = 0; i < frame->getPayloadLength(); i++)
