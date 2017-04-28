@@ -1,8 +1,0 @@
-{
- "args": [
-  "atsamr21-xpro"
- ],
- "sh": false,
- "env": {},
- "port": "None"
-}
