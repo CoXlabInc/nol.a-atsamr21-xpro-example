@@ -4,8 +4,7 @@
 
 void send(void *args);
 static void sendDone(IEEE802_15_4Mac &radio,
-                     IEEE802_15_4Frame *frame,
-                     error_t result);
+                     IEEE802_15_4Frame *frame);
 static void ledOnTask(void *);
 static void ledOffTask(void *);
 static void sendTask(void *args);
@@ -38,7 +37,7 @@ void setup(void) {
   node_ext_id[6] = highByte(node_id);
   node_ext_id[7] = lowByte(node_id);
 
-  Lpp = LPPMac::Create();
+  Lpp = new LPPMac();
   Lpp->begin(AT86RF233, 0x1234, 0xFFFF, node_ext_id);
   Lpp->setProbePeriod(3000);
   Lpp->setListenTimeout(3300);
@@ -69,13 +68,12 @@ static void ledOffTask(void *) {
 }
 
 static void sendDone(IEEE802_15_4Mac &radio,
-                     IEEE802_15_4Frame *frame,
-                     error_t result) {
+                     IEEE802_15_4Frame *frame) {
   uint16_t ratio;
 
   printf("TX (");
 
-  if (result == ERROR_SUCCESS) {
+  if (frame->result == RadioPacket::SUCCESS) {
     success++;
     printf("S ");
   } else {
