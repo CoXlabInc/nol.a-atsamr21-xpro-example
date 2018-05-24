@@ -4,7 +4,10 @@ Timer tPrint;
 
 static void printTask(void *) {
   System.ledToggle();
-  printf("[%lu usec] Hi!\n", micros());
+
+  struct timeval t;
+  gettimeofday(&t, NULL);
+  printf("[%lu.%06lu] Hi!\n", (uint32_t) t.tv_sec, t.tv_usec);
 }
 
 static void keyboard(SerialPort&) {
@@ -18,7 +21,7 @@ void setup() {
   printf("\n*** [ATSAMR21-XPro] Basic functions ***\n");
 
   tPrint.onFired(printTask, NULL);
-  tPrint.startPeriodic(1000);
+  tPrint.startPeriodic(100);
 
   Serial.listen();
   Serial.onReceive(keyboard);
