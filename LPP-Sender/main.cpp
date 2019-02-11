@@ -1,5 +1,3 @@
-// -*- indent-tabs-mode:nil; -*-
-
 #include <cox.h>
 
 void send(void *args);
@@ -85,12 +83,10 @@ static void sendDone(IEEE802_15_4Mac &radio,
   else
     ratio = 0;
 
-  uint8_t *payload = (uint8_t *) frame->getPayloadPointer();
-
   printf("%u %% (%lu/%lu)) (%02X %02X..) t: %u\n",
          ratio, success, sent,
-         payload[0],
-         payload[1],
+         frame->getPayloadAt(0),
+         frame->getPayloadAt(1),
          frame->txCount);
 
   delete frame;
@@ -99,7 +95,6 @@ static void sendDone(IEEE802_15_4Mac &radio,
 static void sendTask(void *args) {
   IEEE802_15_4Frame *frame;
   uint8_t n;
-  uint8_t *payload;
   uint16_t dst;
   uint8_t dest_ext_id[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0, 0};
   error_t err;
@@ -112,29 +107,23 @@ static void sendTask(void *args) {
       return;
     }
 
-    frame->dstAddr.pan.len = 2;
-    frame->dstAddr.pan.id = 0x1234;
 #if 0
-    frame->dstAddr.len = 2;
-    frame->dstAddr.id.s16 = dst;
+    IEEE802_15_4Address dstAddr(dst, 0x1234);
 #else
-    frame->dstAddr.len = 8;
     dest_ext_id[6] = highByte(dst);
     dest_ext_id[7] = lowByte(dst);
-    memcpy(frame->dstAddr.id.s64, dest_ext_id, 8);
+    IEEE802_15_4Address dstAddr(dest_ext_id, 0x1234);
 #endif
     //frame->setAckRequest(false);
 
     frame->setPayloadLength(100);
-    payload = (uint8_t *) frame->getPayloadPointer();
 
     for (n = 2; n < 100; n++) {
-      payload[n] = n;
+      frame->setPayloadAt(n, n);
     }
 
-    payload[0] = (sent >> 8);
-    payload[1] = (sent & 0xff);
-
+    frame->setPayloadAt(0, sent >> 8);
+    frame->setPayloadAt(1, sent & 0xff);
 
     err = Lpp->send(frame);
     if (err != ERROR_SUCCESS) {
