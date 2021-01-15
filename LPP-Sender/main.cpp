@@ -1,4 +1,5 @@
 #include <cox.h>
+#include <LPPMac.hpp>
 
 void send(void *args);
 static void sendDone(IEEE802_15_4Mac &radio,
